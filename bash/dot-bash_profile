@@ -1,0 +1,50 @@
+#! /bin/bash
+
+# Global stuff
+export PATH=$HOME/bin:$PATH
+export EDITOR=vi
+
+# Homebrew stuff
+export PATH=$HOME/homebrew/bin:$PATH
+export LD_LIBRARY_PATH=$HOME/homebrew/lib:$LD_LIBRARY_PATH
+
+# Using different SSH identities based on Git repo's configured user.email
+export GIT_SSH=$HOME/bin/git-ssh
+
+# Using GNU stow to manage symlinks to dotfiles.
+alias dotsync="stow --dotfiles --dir=$HOME/dotfiles --target=$HOME --ignore=README.md"
+
+# Exclude files and folders that start with "." -- Useful when listing files but
+# you don't care about the hidden ones especially .git etc.
+alias no.='egrep -v "/\\.|^\\.\[^/\]"'
+
+# List and list all, vertically please.
+alias la='ls -Glah'
+alias ll='ls -Glh'
+alias l='ls -Gth'
+
+# ls color settings
+export CLICOLOR=1
+export LSCOLORS=GxFxCxDxBxegedabagaced
+
+# Given an expanded file pattern, return true if the first one exists.
+exists() {
+  test -e $1
+}
+
+field() {
+  s=""
+  c=""
+  for a in $*
+  do
+    s="$s$c\$$a";
+    c=","
+  done
+  awk "{ print $s }"
+}
+
+# Load other bash profile files if present.
+if exists $HOME/.bash_profile_*
+then for f in $HOME/.bash_profile_*; do source $f; done
+fi
+

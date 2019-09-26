@@ -1,0 +1,30 @@
+[user]
+	name = Brendan Baldwin
+	email = brendan@usergenic.com
+[push]
+	default = current
+[color]
+	ui = true
+[alias]
+  s = status
+  b = branch
+  d = diff
+  l = log -p
+	l1 = log --format=oneline
+
+[core]
+	excludesfile = /Users/brendanb/.gitignore
+[filter "lfs"]
+	clean = git-lfs clean %f
+	smudge = git-lfs smudge %f
+	required = true
+[http]
+	cookiefile = /Users/brendanb/.gitcookies
+
+# Use git and git+ssh instead of https
+[url "git://github.com/"]
+  insteadOf = https://github.com/
+[url "git@github.com:"]
+  pushInsteadOf = "git://github.com/"
+[url "git@github.com:"]
+  pushInsteadOf = "https://github.com/"

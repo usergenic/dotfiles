@@ -1,0 +1,235 @@
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+autocmd FileType *       set formatoptions=tcql nocindent comments&
+autocmd FileType c,cpp   set formatoptions=croql cindent comments=sr:/*,mb:*,ex:*/,://
+autocmd FileType make    set noexpandtab shiftwidth=8 softtabstop=0
+
+" Automatically reload this .vimrc file when saving it.
+autocmd! bufwritepost .vimrc source %
+
+syntax on
+
+set autoindent
+set backspace=2
+" set clipboard=unnamed
+set expandtab
+set grepformat=%f:%l:%m
+set grepprg=ack
+set hidden
+set hlsearch
+set incsearch
+set ls=2
+set modeline
+set nobackup
+set nocompatible
+set nonumber
+set noswapfile
+set notextmode
+set ruler
+set shiftwidth=2
+set showmatch
+set smartindent
+set t_Co=256
+set tabstop=2
+
+" ---------------------
+" Vundle Plugin Manager
+" ---------------------
+
+" set the runtime path to include Vundle and initialize
+set runtimepath+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+call vundle#rc()
+
+" Vundle manages Vundle
+Plugin 'gmarik/Vundle.vim'
+
+" Plugins
+Plugin 'Lokaltog/vim-easymotion'
+Plugin 'Shougo/neocomplete.vim'
+Plugin 'airblade/vim-gitgutter'
+Plugin 'ap/vim-buftabline'
+"Plugin 'dermusikman/sonicpi.vim'
+Plugin 'embear/vim-foldsearch'
+Plugin 'jtratner/vim-flavored-markdown'
+Plugin 'junegunn/fzf'
+Plugin 'junegunn/fzf.vim'
+Plugin 'itchyny/lightline.vim'
+Plugin 'kchmck/vim-coffee-script'
+Plugin 'mattn/emmet-vim'
+Plugin 'mileszs/ack.vim'
+Plugin 'scrooloose/nerdtree'
+Plugin 'skwp/greplace.vim'
+Plugin 'suan/vim-instant-markdown'
+Plugin 'terryma/vim-multiple-cursors'
+Plugin 'tpope/vim-fugitive'
+Plugin 'Yggdroot/indentLine'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'editorconfig/editorconfig-vim'
+Plugin 'dracula/vim'
+Plugin 'dag/vim-fish'
+
+call vundle#end()
+
+let g:instant_markdown_autostart = 0
+
+" Emmet
+let g:user_emmet_install_global = 0
+let g:user_emmet_leader_key = '<C-E>'
+autocmd FileType html,css EmmetInstall
+
+" Neocomplete stuff
+
+" Disable AutoComplPop.
+let g:acp_enableAtStartup = 0
+" Use neocomplete.
+let g:neocomplete#enable_at_startup = 1
+" Use smartcase.
+let g:neocomplete#enable_smart_case = 1
+" Set minimum syntax keyword length.
+let g:neocomplete#sources#syntax#min_keyword_length = 3
+let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+
+" Define dictionary.
+let g:neocomplete#sources#dictionary#dictionaries = {
+    \ 'default' : '',
+    \ 'vimshell' : $HOME.'/.vimshell_hist',
+    \ 'scheme' : $HOME.'/.gosh_completions'
+        \ }
+
+" Define keyword.
+if !exists('g:neocomplete#keyword_patterns')
+    let g:neocomplete#keyword_patterns = {}
+endif
+let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+
+" Plugin key-mappings.
+inoremap <expr><C-g>     neocomplete#undo_completion()
+inoremap <expr><C-l>     neocomplete#complete_common_string()
+
+" Recommended key-mappings.
+" <CR>: close popup and save indent.
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function()
+  return neocomplete#close_popup() . "\<CR>"
+  " For no inserting <CR> key.
+  "return pumvisible() ? neocomplete#close_popup() : "\<CR>"
+endfunction
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+" <C-h>, <BS>: close popup and delete backword char.
+inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+inoremap <expr><C-y>  neocomplete#close_popup()
+inoremap <expr><C-e>  neocomplete#cancel_popup()
+
+
+" Neocomplete- Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+" Enable heavy omni completion.
+if !exists('g:neocomplete#sources#omni#input_patterns')
+  let g:neocomplete#sources#omni#input_patterns = {}
+endif
+
+" ------------
+" Key Bindings
+" ------------
+
+" why waste the energy holding shift down?
+nnoremap ; :
+
+" when wordwrap is on, j and k move rendered rows instead of literal
+nnoremap j gj
+nnoremap k gk
+
+let mapleader = ","
+
+map <c-a> ^
+map <c-e> $
+imap <c-c> <ESC>
+map <c-c> <ESC>
+map <c-x> :bd<cr>
+imap <c-x> <ESC>:bd<cr>
+map <leader><c-x> :quit<cr>
+map <c-g> <ESC>
+imap <c-g> <ESC>
+map <leader>p :CtrlPClearAllCaches<cr>
+map <leader>/ :NERDTreeToggle<cr>
+map <leader>. <leader><leader>s
+map \ <leader><leader>s
+nnoremap <silent> <leader>v :e ~/.vimrc<cr>
+map <c-p> :FZF<cr>
+imap <c-p> <ESC>:FZF<cr>
+map <c-w> :w<cr>
+imap <c-w> <ESC>:w<cr>i
+
+" format JSON
+com! FormatJSON %!python -m json.tool
+
+let g:C_Ctrl_j = 'off'
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-h> <C-w>h
+nnoremap <C-l> <C-w>l
+
+map { :bp<CR>
+map } :bn<CR>
+map <leader>[ :bp<CR>
+map <leader>] :bn<CR>
+
+" Quickly edit/reload the vimrc file
+nmap <silent> <leader>ev :e $MYVIMRC<CR>
+nmap <silent> <leader>sv :so $MYVIMRC<CR>
+
+nmap <leader>n :set invnumber<CR>
+
+set background=dark
+color dracula
+
+filetype plugin indent off
+filetype plugin on
+
+" The go-vim plugin seems to do better than this default junk.
+" leaving it commented here for now.
+"set runtimepath+=$GOROOT/misc/vim
+"filetype plugin indent on
+"autocmd FileType go autocmd BufWritePre <buffer> Fmt
+
+" Automatically trim trailing whitespace
+" autocmd BufWritePre * :%s/\s\+$//e
+
+syntax on
+
+autocmd BufNewFile,BufRead .autotest set filetype=ruby
+autocmd BufNewFile,BufRead *.coffee set filetype=coffee
+autocmd BufNewFile,BufRead *.coffee.md set filetype=litcoffee
+autocmd BufNewFile,BufRead *.dart set filetype=dart
+autocmd BufNewFile,BufRead *.fish set filetype=fish
+autocmd BufNewFile,BufRead *.go set filetype=go
+autocmd BufNewFile,BufRead *.ng set filetype=html
+autocmd BufNewFile,BufRead *.markdown set filetype=ghmarkdown
+autocmd BufNewFile,BufRead *.md set filetype=ghmarkdown
+autocmd BufNewFile,BufRead *.rake set filetype=ruby
+autocmd BufNewFile,BufRead *.ts set filetype=typescript
+autocmd BufNewFile,BufRead Guardfile set filetype=ruby
+autocmd BufNewFile,BufRead Rakefile set filetype=ruby
+
+" `crontab -e` requires tempfiles to be edited in-place.
+" See Stack Overflow question: https://goo.gl/W91QfS
+au FileType crontab setlocal backupcopy=yes
+
+" if you need sudo to write to a file, use w!!
+cmap w!! w !sudo tee % >/dev/null
+
+" close VIM if only window left open is NERDTree
+" autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+
+" Damian Conway: show color column when you exceed 80 characters.
+call matchadd('ColorColumn', '\%81v', 80)
+
