@@ -13,7 +13,12 @@ export GIT_SSH=$HOME/bin/git-ssh
 
 # Using GNU stow to manage symlinks to dotfiles.
 dotsync() {
-  stow --dotfiles --dir=$HOME/dotfiles --target=$HOME --ignore=README.md $1
+  if test -z "$1"
+  then
+    for f in $(ls $HOME/dotfiles | sort); do test -d $f && dotsync $f; done
+  else
+    stow --dotfiles --dir=$HOME/dotfiles --target=$HOME --ignore=README.md $1
+  fi
 }
 
 # Exclude files and folders that start with "." -- Useful when listing files but
