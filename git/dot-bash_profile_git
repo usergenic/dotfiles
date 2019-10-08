@@ -1,0 +1,21 @@
+#! /bin/bash
+
+# Find a branch (local or remote) matching search string
+git_branch_find() {
+    git branch --all | grep "/\?[^/]*$*""[^/]*\$" | grep -o "[^/ ]\+\$" | sort | uniq
+}
+
+# Find a branch exactly matching given string
+git_branch_find_exact() {
+    git_branch_find $* | grep "^$*\$"
+}
+
+# Find a local branch matching search string
+git_local_branch_find() {
+    git branch | grep "[^/]*$*""[^/]*\$" | grep -o "[^/ ]\+\$" | sort | uniq
+}
+
+# Find a local branch exactly matching given string
+git_local_branch_find_exact() {
+    git_local_branch_find $* | grep "^$*\$"
+}

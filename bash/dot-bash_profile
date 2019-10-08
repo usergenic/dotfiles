@@ -12,7 +12,9 @@ export LD_LIBRARY_PATH=$HOME/homebrew/lib:$LD_LIBRARY_PATH
 export GIT_SSH=$HOME/bin/git-ssh
 
 # Using GNU stow to manage symlinks to dotfiles.
-alias dotsync="stow --dotfiles --dir=$HOME/dotfiles --target=$HOME --ignore=README.md"
+dotsync() {
+  stow --dotfiles --dir=$HOME/dotfiles --target=$HOME --ignore=README.md $1
+}
 
 # Exclude files and folders that start with "." -- Useful when listing files but
 # you don't care about the hidden ones especially .git etc.
@@ -33,18 +35,20 @@ exists() {
 }
 
 field() {
-  s=""
-  c=""
-  for a in $*
-  do
-    s="$s$c\$$a";
-    c=","
-  done
+  s=""; c=""
+  for a in $*; do s="$s$c\$$a"; c=","; done
   awk "{ print $s }"
 }
 
+# Who wants to type "field" everywhere?  f that!
+alias f=field
+
+# Display disk usage, order by folder name (more tree-like)
+# requires align, in home/bin
+alias dk='du -k | f 2 1 | sort | f 2 1 | align | sed "s/\.\//  /"'
+
 # Load other bash profile files if present.
 if exists $HOME/.bash_profile_*
-then for f in $HOME/.bash_profile_*; do source $f; done
+then for f in $(ls $HOME/.bash_profile_* | sort); do source $f; done
 fi
 
