@@ -12,14 +12,14 @@ git_branch_find_exact() {
 
 # Get the current branch name of a git repo
 git_branch_name() {
-  branch_name=$(command git symbolic-ref --short HEAD)
+  branch_name=$(command git symbolic-ref --short HEAD 2>/dev/null)
 
   if test -z "$branch_name"
   then
-    tag_name=$(command git describe --tags --exact-match HEAD)
+    tag_name=$(command git describe --tags --exact-match HEAD 2>/dev/null)
     if test -z "$tag_name"
     then
-      command git rev-parse --short HEAD
+      command git rev-parse --short HEAD 2>/dev/null
     else
       printf "%s\n" "$tag_name"
     fi
@@ -171,7 +171,7 @@ git_worktree_open() {
 
 alias gb="git branch"
 alias gbf="git_branch_find"
-alias gp="git push --set-upstream origin $(git_branch_name)"
+alias gp="git push --set-upstream origin \$(git_branch_name)"
 alias gwo="git_worktree_open"
 alias gwd="git_worktree_delete"
 alias gwl="git worktree list"
