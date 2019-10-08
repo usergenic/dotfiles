@@ -2,20 +2,158 @@
 
 # Find a branch (local or remote) matching search string
 git_branch_find() {
-    git branch --all | grep "/\?[^/]*$*""[^/]*\$" | grep -o "[^/ ]\+\$" | sort | uniq
+  git branch --all | grep "/\?[^/]*$*""[^/]*\$" | grep -o "[^/ ]\+\$" | sort | uniq
 }
 
 # Find a branch exactly matching given string
 git_branch_find_exact() {
-    git_branch_find $* | grep "^$*\$"
+  git_branch_find $* | grep "^$*\$"
 }
 
 # Find a local branch matching search string
 git_local_branch_find() {
-    git branch | grep "[^/]*$*""[^/]*\$" | grep -o "[^/ ]\+\$" | sort | uniq
+  git branch | grep "[^/]*$*""[^/]*\$" | grep -o "[^/ ]\+\$" | sort | uniq
 }
 
 # Find a local branch exactly matching given string
 git_local_branch_find_exact() {
-    git_local_branch_find $* | grep "^$*\$"
+  git_local_branch_find $* | grep "^$*\$"
 }
+
+# Deletes the directory and branch for the matching worktree
+git_worktree_delete() {
+  arg_count=$(echo $* | wc -w)
+
+  if test $arg_count -ne 1
+  then
+    echo "only one argument accepted by git_worktree_delete"
+    return 1
+  fi
+
+  existing_worktree=$(git_worktree_find $*)
+  worktree_count=$(echo $existing_worktree | wc -w)
+
+  if test $worktree_count -eq 0
+  then
+    echo "no worktree matches"
+    return 1
+  fi
+
+  if test $worktree_count -gt 1
+  then
+    echo "multiple worktree matches:"
+    echo $existing_worktree
+    return 1
+  fi
+
+  cd $existing_worktree
+  if git_is_touched
+  then
+    echo "unsaved changes in worktree. aborting"
+    return 1
+  fi
+
+  branch_name=${git_branch_name}
+
+  # switch to master worktree after delete
+  git_worktree_open master
+  rm -rf $existing_worktree
+  git worktree prune
+  git branch -D $branch_name
+}
+
+# Get the name of the branch of the worktree that matches search string
+git_worktree_find() {
+  exact_result=$(git worktree list | grep "\\[$*\\]" | grep -o '^[^ ]\+')
+  exact_count=$(echo $exact_result | wc -w)
+  if test $exact_count -eq 1
+  then
+    echo $exact_result
+    return 0
+  fi
+  git worktree list | grep "\\[.*$*.*\\]" | grep -o '^[^ ]\+'
+}
+
+# Find or create a git worktree for branch
+git_worktree_open() {
+  arg_count=$(echo $* | wc -w)
+  echo $arg_count
+
+  if test $arg_count -ne 1
+  then
+    echo "only one argument accepted by git_worktree_open"
+    return 1
+  fi
+
+  existing_worktree=$(git_worktree_find $*)
+  worktree_count=$(echo $existing_worktree | wc -w)
+
+  if test $worktree_count -eq 1
+  then
+    cd $existing_worktree
+    return 0
+  fi
+
+  if test $worktree_count -gt 1
+  then
+    echo "multiple worktree matches:"
+    echo $existing_worktree
+    return 1
+  fi
+
+  existing_branch=$(git_branch_find_exact $* || git_branch_find $*)
+  existing_local_branch=$(git_local_branch_find_exact $* || git_local_branch_find $*)
+  branch_count=$(echo $existing_branch | wc -w)
+  local_branch_count=$(echo $existing_local_branch | wc -w)
+
+  if test $branch_count -gt 1
+  then
+    echo "multiple branch matches:"
+    echo $existing_branch
+    return 1
+  fi
+
+  if test $branch_count -eq 0
+  then
+    branch_name="$*"
+    echo "creating branch and adding worktree for '$branch_name'"
+  fi
+
+  if test $branch_count -eq 1
+  then
+    branch_name="$existing_branch"
+    echo "adding worktree for existing branch '$branch_name'"
+  fi
+
+  repo_basedir=$(git_repository_root | grep -o "^[^~]\+")
+  workgree_dir="$repo_basedir~$branch_name"
+
+  if test $branch_count -eq 0
+  then
+    git worktree add -b $branch_name $worktree_dir
+  fi
+
+  if test $branch_count -eq 1
+  then
+    if test $local_branch_count -eq 0
+    then
+      temp_branch=git_worktree_open.temp
+      git worktree add -b $temp_branch $worktree_dir
+      cd $worktree_dir
+      git checkout $branch_name
+      git branch -D $temp_branch
+      git worktree prune
+    else
+      git worktree add $worktree_dir $branch_name
+    fi
+  fi
+
+  cd $worktree_dir
+}
+
+alias gb="git branch"
+alias gbf="git_branch_find"
+alias gp="git push --set-upstream origin \$(git_branch_name)"
+alias gwo="git_worktree_open"
+alias gwd="git_worktree_delete"
+alias gwl="git worktree list"

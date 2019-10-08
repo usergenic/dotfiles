@@ -47,6 +47,9 @@ alias f=field
 # requires align, in home/bin
 alias dk='du -k | f 2 1 | sort | f 2 1 | align | sed "s/\.\//  /"'
 
+# Reload ~./bash_profile
+alias reload="source ~/.bash_profile"
+
 # Load other bash profile files if present.
 if exists $HOME/.bash_profile_*
 then for f in $(ls $HOME/.bash_profile_* | sort); do source $f; done
