@@ -50,12 +50,12 @@ git_local_branch_find_exact() {
 
 # Get the top level directory of the current git repository
 git_repository_root() {
-  if not git_is_repo
+  if git_is_repo
   then
+    command git rev-parse --show-toplevel
+  else
     return 1
   fi
-
-  command git rev-parse --show-toplevel
 }
 
 # Deletes the directory and branch for the matching worktree
@@ -115,7 +115,6 @@ git_worktree_find() {
 # Find or create a git worktree for branch
 git_worktree_open() {
   arg_count=$(echo $* | wc -w)
-  echo $arg_count
 
   if test $arg_count -ne 1
   then
@@ -164,7 +163,7 @@ git_worktree_open() {
   fi
 
   repo_basedir=$(git_repository_root | grep -o "^[^~]\+")
-  workgree_dir="$repo_basedir~$branch_name"
+  worktree_dir="$repo_basedir~$branch_name"
 
   if test $branch_count -eq 0
   then
