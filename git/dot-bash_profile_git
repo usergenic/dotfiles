@@ -28,6 +28,16 @@ git_branch_name() {
   fi
 }
 
+# Test if the current directory is within a Git repository
+git_is_repo() {
+  if command git rev-parse --git-dir 1>/dev/null 2>/dev/null
+  then
+    return 0
+  else
+    return 1
+  fi
+}
+
 # Find a local branch matching search string
 git_local_branch_find() {
   git branch | grep "[^/]*$*""[^/]*\$" | grep -o "[^/ ]\+\$" | sort | uniq
@@ -36,6 +46,16 @@ git_local_branch_find() {
 # Find a local branch exactly matching given string
 git_local_branch_find_exact() {
   git_local_branch_find $* | grep "^$*\$"
+}
+
+# Get the top level directory of the current git repository
+git_repository_root() {
+  if not git_is_repo
+  then
+    return 1
+  fi
+
+  command git rev-parse --show-toplevel
 }
 
 # Deletes the directory and branch for the matching worktree
