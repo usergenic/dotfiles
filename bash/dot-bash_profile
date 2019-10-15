@@ -8,9 +8,6 @@ export EDITOR=vi
 export PATH=$HOME/homebrew/bin:$PATH
 export LD_LIBRARY_PATH=$HOME/homebrew/lib:$LD_LIBRARY_PATH
 
-# Using different SSH identities based on Git repo's configured user.email
-export GIT_SSH=$HOME/bin/git-ssh
-
 # Using GNU stow to manage symlinks to dotfiles.
 dotsync() {
   if test -z "$1"
