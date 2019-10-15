@@ -1,5 +1,8 @@
 #! /bin/bash
 
+# Using different SSH identities based on Git repo's configured user.email
+export GIT_SSH=$HOME/bin/git-ssh
+
 # Find a branch (local or remote) matching search string
 git_branch_find() {
   git branch --all | grep "/\?[^/]*$*""[^/]*\$" | grep -o "[^/ ]\+\$" | sort | uniq
