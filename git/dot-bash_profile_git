@@ -38,6 +38,25 @@ git_is_repo() {
   fi
 }
 
+# Test if there are any changes in the working tree
+git_is_touched() {
+  if git_is_repo
+  then
+    command git status --porcelain 1>/dev/null | command awk '
+        // {
+            z++
+            exit 0
+        }
+
+        END {
+            exit !z
+        }
+    '
+  else
+    return 1
+  fi
+}
+
 # Find a local branch matching search string
 git_local_branch_find() {
   git branch | grep "[^/]*$*""[^/]*\$" | grep -o "[^/ ]\+\$" | sort | uniq
