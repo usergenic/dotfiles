@@ -12,8 +12,9 @@ export LD_LIBRARY_PATH=$HOME/homebrew/lib:$LD_LIBRARY_PATH
 dotsync() {
   if test -z "$1"
   then
-    for f in $(ls $HOME/dotfiles | sort); do test -d $f && dotsync $f; done
+    for f in $(ls $HOME/dotfiles | sort); do test -d $HOME/dotfiles/$f && dotsync $f; done
   else
+    echo dotsyncing $1
     stow --dotfiles --dir=$HOME/dotfiles --target=$HOME --ignore=README.md $1
   fi
 }
