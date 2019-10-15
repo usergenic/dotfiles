@@ -19,7 +19,7 @@ git_branch_name() {
 
   if test -z "$branch_name"
   then
-    tag_name=$(command git describe --tags --exact-match HEAD 2>/dev/null)
+    local tag_name=$(command git describe --tags --exact-match HEAD 2>/dev/null)
     if test -z "$tag_name"
     then
       command git rev-parse --short HEAD 2>/dev/null
@@ -82,7 +82,7 @@ git_repository_root() {
 
 # Deletes the directory and branch for the matching worktree
 git_worktree_delete() {
-  arg_count=$(echo $* | wc -w)
+  local arg_count=$(echo $* | wc -w)
 
   if test $arg_count -ne 1
   then
@@ -90,8 +90,8 @@ git_worktree_delete() {
     return 1
   fi
 
-  existing_worktree=$(git_worktree_find $*)
-  worktree_count=$(echo $existing_worktree | wc -w)
+  local existing_worktree=$(git_worktree_find $*)
+  local worktree_count=$(echo $existing_worktree | wc -w)
 
   if test $worktree_count -eq 0
   then
@@ -106,6 +106,8 @@ git_worktree_delete() {
     return 1
   fi
 
+  echo "Deleting worktree $existing_worktree"
+
   cd $existing_worktree
   if git_is_touched
   then
@@ -113,7 +115,7 @@ git_worktree_delete() {
     return 1
   fi
 
-  branch_name=${git_branch_name}
+  local branch_name=$(git_branch_name)
 
   # switch to master worktree after delete
   git_worktree_open master
@@ -124,8 +126,8 @@ git_worktree_delete() {
 
 # Get the name of the branch of the worktree that matches search string
 git_worktree_find() {
-  exact_result=$(git worktree list | grep "\\[$*\\]" | grep -o '^[^ ]\+')
-  exact_count=$(echo $exact_result | wc -w)
+  local exact_result=$(git worktree list | grep "\\[$*\\]" | grep -o '^[^ ]\+')
+  local exact_count=$(echo $exact_result | wc -w)
   if test $exact_count -eq 1
   then
     echo $exact_result
@@ -136,7 +138,7 @@ git_worktree_find() {
 
 # Find or create a git worktree for branch
 git_worktree_open() {
-  arg_count=$(echo $* | wc -w)
+  local arg_count=$(echo $* | wc -w)
 
   if test $arg_count -ne 1
   then
@@ -144,8 +146,8 @@ git_worktree_open() {
     return 1
   fi
 
-  existing_worktree=$(git_worktree_find $*)
-  worktree_count=$(echo $existing_worktree | wc -w)
+  local existing_worktree=$(git_worktree_find $*)
+  local worktree_count=$(echo $existing_worktree | wc -w)
 
   if test $worktree_count -eq 1
   then
@@ -160,10 +162,10 @@ git_worktree_open() {
     return 1
   fi
 
-  existing_branch=$(git_branch_find_exact $* || git_branch_find $*)
-  existing_local_branch=$(git_local_branch_find_exact $* || git_local_branch_find $*)
-  branch_count=$(echo $existing_branch | wc -w)
-  local_branch_count=$(echo $existing_local_branch | wc -w)
+  local existing_branch=$(git_branch_find_exact $* || git_branch_find $*)
+  local existing_local_branch=$(git_local_branch_find_exact $* || git_local_branch_find $*)
+  local branch_count=$(echo $existing_branch | wc -w)
+  local local_branch_count=$(echo $existing_local_branch | wc -w)
 
   if test $branch_count -gt 1
   then
@@ -174,18 +176,18 @@ git_worktree_open() {
 
   if test $branch_count -eq 0
   then
-    branch_name="$*"
+    local branch_name="$*"
     echo "creating branch and adding worktree for '$branch_name'"
   fi
 
   if test $branch_count -eq 1
   then
-    branch_name="$existing_branch"
+    local branch_name="$existing_branch"
     echo "adding worktree for existing branch '$branch_name'"
   fi
 
-  repo_basedir=$(git_repository_root | grep -o "^[^~]\+")
-  worktree_dir="$repo_basedir~$branch_name"
+  local repo_basedir=$(git_repository_root | grep -o "^[^~]\+")
+  local worktree_dir="$repo_basedir~$branch_name"
 
   if test $branch_count -eq 0
   then
@@ -196,7 +198,7 @@ git_worktree_open() {
   then
     if test $local_branch_count -eq 0
     then
-      temp_branch=git_worktree_open.temp
+      local temp_branch=git_worktree_open.temp
       git worktree add -b $temp_branch $worktree_dir
       cd $worktree_dir
       git checkout $branch_name
