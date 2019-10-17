@@ -19,12 +19,18 @@ dotsync() {
   fi
 }
 
+dotpull() {
+  cd $HOME/dotfiles &&
+      git pull &&
+      dotsync
+}
+
 # Update dotfiles
 dotpush() {
-  cd $HOME/dotfiles
-  git add .
-  git commit -m "dotpush() committing changes: $(git status --porcelain=1)"
-  git push
+  cd $HOME/dotfiles && 
+      git add . &&
+      git commit -m "dotpush() committing changes: $(git status --porcelain=1)" &&
+      git push
 }
 
 # Exclude files and folders that start with "." -- Useful when listing files but
