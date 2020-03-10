@@ -73,3 +73,5 @@ then for f in $(ls $HOME/.bash_profile_* | sort); do source $f; done
 fi
 
 export PS1=$GREEN'$(hostname -s) '$CYAN'\w'$RED'$(git_branch_name 1>/dev/null && echo " ($(git_branch_name))")'$YELLOW'\$ '$NO_COLOR
+
+export PATH="$HOME/.cargo/bin:$PATH"
