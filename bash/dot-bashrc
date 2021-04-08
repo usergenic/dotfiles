@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Load other bashrc files if present.
-if exists $HOME/.bashrc_*
+if test -e $HOME/.bashrc_*
 then for f in $(ls $HOME/.bashrc_* | sort); do source $f; done
 fi
 
