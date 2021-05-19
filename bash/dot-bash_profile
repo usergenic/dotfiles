@@ -8,31 +8,6 @@ export EDITOR=vi
 export PATH=$HOME/homebrew/bin:$PATH
 export LD_LIBRARY_PATH=$HOME/homebrew/lib:$LD_LIBRARY_PATH
 
-# Using GNU stow to manage symlinks to dotfiles.
-dotsync() {
-  if test -z "$1"
-  then
-    for f in $(ls $HOME/dotfiles | sort); do test -d $HOME/dotfiles/$f && dotsync $f; done
-  else
-    echo dotsyncing $1
-    stow --dotfiles --dir=$HOME/dotfiles --target=$HOME --ignore=README.md $1
-  fi
-}
-
-dotpull() {
-  cd $HOME/dotfiles &&
-      git pull &&
-      dotsync
-}
-
-# Update dotfiles
-dotpush() {
-  cd $HOME/dotfiles && 
-      git add . &&
-      git commit -m "dotpush() committing changes: $(git status --porcelain=1)" &&
-      git push
-}
-
 # Exclude files and folders that start with "." -- Useful when listing files but
 # you don't care about the hidden ones especially .git etc.
 alias no.='egrep -v "/\\.|^\\.\[^/\]"'

@@ -1,0 +1,26 @@
+#! /bin/bash
+
+# Using GNU stow to manage symlinks to dotfiles.
+dotsync() {
+  if test -z "$1"
+  then
+    for f in $(ls $HOME/dotfiles | sort); do test -d $HOME/dotfiles/$f && dotsync $f; done
+  else
+    echo dotsyncing $1
+    stow --dotfiles --dir=$HOME/dotfiles --target=$HOME --ignore=README.md $1
+  fi
+}
+
+dotpull() {
+  cd $HOME/dotfiles &&
+      git pull &&
+      dotsync
+}
+
+# Update dotfiles
+dotpush() {
+  cd $HOME/dotfiles && 
+      git add . &&
+      git commit -m "dotpush() committing changes: $(git status --porcelain=1)" &&
+      git push
+}
