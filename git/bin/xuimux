@@ -1,0 +1,23 @@
+#!/bin/bash
+
+CLOUDTOP=puff.c.googlers.com
+
+# Start a new tmux session
+tmux new-session
+
+# Create a pane for the SSH port forwarding.
+tmux split-window -h
+tmux select-pane -T 0 "SSH port forwarding to $CLOUDTOP"
+tmux send-keys "autossh -M0 -NL 0.0.0.0:4999:localhost:4999 -L 0.0.0.0:5001:localhost:5001 -R 0.0.0.0:5037:localhost:5037 $CLOUDTOP" C-m
+
+# Create a pane for the remote_epg_server
+tmux split-window -h
+tmux select-pane -T 1 "Remote EPG Server"
+tmux send-keys "cd /google/src/cloud/brendanb/xuitoolkit_whatever/google3" C-m
+tmux send-keys "video/youtube/utils/elements/tools/playground/remote_epg_server $CLOUDTOP" C-m
+
+# Create a pane for the android install of xuitoolkit
+tmux split-window -h
+tmux select-pane -T 2 "blaze --noexoblaze --blazerc=/dev/null mobile-install --android_platforms=//buildenv/platforms/android:x86_64 --config=android_java8_libs java/com/google/android/libraries/elements/sample/playground --android_ndk_min_sdk_version=21" C-m
+
+tmux attach-session

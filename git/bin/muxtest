@@ -1,0 +1,6 @@
+#!/bin/bash
+
+tmux new-session -d -s my_session 'muxtest2'
+tmux attach-session
+
+
