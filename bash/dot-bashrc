@@ -1,8 +1,8 @@
-#! /bin/bash
+#!/bin/bash
 
 # Load other bashrc files if present.
-if test -e $HOME/.bashrc_*
-then for f in $(ls $HOME/.bashrc_* | sort); do source $f; done
+if [[ -n `ls ~/.bashrc_* 2> /dev/null` ]]; then
+  for f in $(ls $HOME/.bashrc_* | sort); do source $f; done
 fi
 
 # For now, I really don't want to try and think to hard about whether
