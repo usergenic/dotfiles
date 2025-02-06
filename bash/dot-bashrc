@@ -9,3 +9,4 @@ fi
 # to put things in bashrc vs bash_profile, so I'm just going to have 
 # the bashrc read the bash_profile.
 [ -f $HOME/.bash_profile ] && . $HOME/.bash_profile
+

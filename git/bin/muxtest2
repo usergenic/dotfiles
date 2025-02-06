@@ -1,0 +1,8 @@
+#!/bin/bash
+
+tmux split-window -v
+tmux select-pane -T "HOLA SENIOR"
+
+tmux split-window -v
+tmux select-pane -T "HOLA SENIORITA"
+
