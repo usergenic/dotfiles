@@ -1,8 +1,8 @@
-#! /bin/bash
+#!/bin/bash
 
 # Load other bashrc files if present.
-if compgen -G ".bashrc_*" >  /dev/null
-then for f in $(ls $HOME/.bashrc_* | sort); do source $f; done
+if [[ -n `ls ~/.bashrc_* 2> /dev/null` ]]; then
+  for f in $(ls $HOME/.bashrc_* | sort); do source $f; done
 fi
 
 # For now, I really don't want to try and think to hard about whether
@@ -10,4 +10,3 @@ fi
 # the bashrc read the bash_profile.
 [ -f $HOME/.bash_profile ] && . $HOME/.bash_profile
 
-alias epg_server='/google/src/head/depot/google3/video/youtube/utils/elements/tools/playground/epg_server'

@@ -117,8 +117,8 @@ git_worktree_delete() {
 
   local branch_name=$(git_branch_name)
 
-  # switch to master worktree after delete
-  git_worktree_open master
+  # switch to main worktree after delete
+  git_worktree_open main
   rm -rf $existing_worktree
   git worktree prune
   git branch -D $branch_name

@@ -12,6 +12,9 @@
   l = log -p
 	l1 = log --format=oneline
 
+  # By Jared Knipp. @see https://stackoverflow.com/a/33760160/430062
+  retag = "!f() { git tag $2 $1 && echo Tagged $2 at $1 && git tag -d $1; }; f"
+
 [core]
 	excludesfile = /Users/brendanb/.gitignore
 [filter "lfs"]
@@ -33,3 +36,5 @@
 	rebase = false
 [url "https://github.com/"]
 	insteadOf = git://github.com/
+[init]
+	defaultBranch = main
