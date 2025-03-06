@@ -24,7 +24,17 @@
 [http]
 	cookiefile = /Users/brendanb/.gitcookies
 
+# Use git and git+ssh instead of https
+#
+# [url "git://github.com/"]
+#   insteadOf = https://github.com/
+# [url "git@github.com:"]
+#   pushInsteadOf = "git://github.com/"
+# [url "git@github.com:"]
+#   pushInsteadOf = "https://github.com/"
 [pull]
 	rebase = false
+[url "https://github.com/"]
+	insteadOf = git://github.com/
 [init]
 	defaultBranch = main
