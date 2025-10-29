@@ -1,6 +1,6 @@
 [user]
 	name = Brendan Baldwin
-	email = brendan@usergenic.com
+	email = brendan.baldwin@soundcloud.com
 [push]
 	default = current
 [color]
@@ -16,13 +16,13 @@
   retag = "!f() { git tag $2 $1 && echo Tagged $2 at $1 && git tag -d $1; }; f"
 
 [core]
-	excludesfile = /Users/brendanb/.gitignore
+	excludesfile = ~/.gitignore
 [filter "lfs"]
 	clean = git-lfs clean %f
 	smudge = git-lfs smudge %f
 	required = true
 [http]
-	cookiefile = /Users/brendanb/.gitcookies
+	cookiefile = ~/.gitcookies
 
 # Use git and git+ssh instead of https
 #
