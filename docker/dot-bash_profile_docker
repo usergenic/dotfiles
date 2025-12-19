@@ -1,0 +1,1 @@
+alias dockerstop="docker stop \$(docker ps -q)"
