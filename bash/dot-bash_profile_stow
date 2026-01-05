@@ -12,15 +12,19 @@ dotsync() {
 }
 
 dotpull() {
+  pushd .
   cd $HOME/dotfiles &&
       git pull &&
       dotsync
+  popd
 }
 
 # Update dotfiles
 dotpush() {
+  pushd .
   cd $HOME/dotfiles && 
       git add . &&
       git commit -m "dotpush() committing changes: $(git status --porcelain=1)" &&
       git push
+  popd
 }
