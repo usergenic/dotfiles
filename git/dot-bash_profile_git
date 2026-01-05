@@ -5,7 +5,7 @@ export GIT_SSH=$HOME/bin/git-ssh
 
 # Find a branch (local or remote) matching search string
 git_branch_find() {
-  git branch --all | grep "/\?[^/]*$*""[^/]*\$" | grep -o "[^/ ]\+\$" | sort | uniq
+  git branch --all | grep "/\?[^/]*$*""[^/]*\$" | grep -o "$*[^/ ]\+\$" | sort | uniq
 }
 
 # Find a branch exactly matching given string
@@ -187,7 +187,8 @@ git_worktree_open() {
   fi
 
   local repo_basedir=$(git_repository_root | grep -o "^[^~]\+")
-  local worktree_dir="$repo_basedir~$branch_name"
+  local embeddable_branch_name=$(echo $branch_name | sed 's/[^a-zA-Z0-9_]/-/g')
+  local worktree_dir="$repo_basedir~$embeddable_branch_name"
 
   if test $branch_count -eq 0
   then

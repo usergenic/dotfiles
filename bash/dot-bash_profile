@@ -52,3 +52,5 @@ fi
 
 export PS1=$GREEN'$(hostname -s) '$CYAN'\w'$RED'$(git_branch_name 1>/dev/null && echo " ($(git_branch_name))")'$YELLOW'\$ '$NO_COLOR
 
+
+[ -d "$HOME/.sc-tools" ] && source "$HOME/.sc-tools/dotfiles/env.bash" #sc-tools-setup
