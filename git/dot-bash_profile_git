@@ -5,12 +5,16 @@ export GIT_SSH=$HOME/bin/git-ssh
 
 # Find a branch (local or remote) matching search string
 git_branch_find() {
-  git branch --all | grep "/\?[^/]*$*""[^/]*\$" | grep -o "$*[^/ ]\+\$" | sort | uniq
+  local search="$1"
+  local escaped_search=$(printf '%s\n' "$search" | sed 's/[[\.*^$()+?{|]/\\&/g')
+  git branch --all | sed 's|^[[:space:]]*\*[[:space:]]*||' | sed 's|^[[:space:]]*||' | sed 's|^remotes/origin/||' | sed 's|^remotes/||' | grep -E ".*${escaped_search}.*\$" | sort | uniq
 }
 
 # Find a branch exactly matching given string
 git_branch_find_exact() {
-  git_branch_find $* | grep "^$*\$"
+  local search="$1"
+  local escaped_search=$(printf '%s\n' "$search" | sed 's/[[\.*^$()+?{|]/\\&/g')
+  git_branch_find "$search" | grep -E "^${escaped_search}\$"
 }
 
 # Get the current branch name of a git repo
@@ -62,12 +66,16 @@ git_is_touched() {
 
 # Find a local branch matching search string
 git_local_branch_find() {
-  git branch | grep "[^/]*$*""[^/]*\$" | grep -o "[^/ ]\+\$" | sort | uniq
+  local search="$1"
+  local escaped_search=$(printf '%s\n' "$search" | sed 's/[[\.*^$()+?{|]/\\&/g')
+  git branch | sed 's|^[[:space:]]*\*[[:space:]]*||' | sed 's|^[[:space:]]*||' | grep -E ".*${escaped_search}.*\$" | sort | uniq
 }
 
 # Find a local branch exactly matching given string
 git_local_branch_find_exact() {
-  git_local_branch_find $* | grep "^$*\$"
+  local search="$1"
+  local escaped_search=$(printf '%s\n' "$search" | sed 's/[[\.*^$()+?{|]/\\&/g')
+  git_local_branch_find "$search" | grep -E "^${escaped_search}\$"
 }
 
 # Get the top level directory of the current git repository
@@ -82,16 +90,14 @@ git_repository_root() {
 
 # Deletes the directory and branch for the matching worktree
 git_worktree_delete() {
-  local arg_count=$(echo $* | wc -w)
-
-  if test $arg_count -ne 1
+  if test $# -ne 1
   then
     echo "only one argument accepted by git_worktree_delete"
     return 1
   fi
 
-  local existing_worktree=$(git_worktree_find $*)
-  local worktree_count=$(echo $existing_worktree | wc -w)
+  local existing_worktree=$(git_worktree_find "$1")
+  local worktree_count=$(echo "$existing_worktree" | wc -w)
 
   if test $worktree_count -eq 0
   then
@@ -102,13 +108,13 @@ git_worktree_delete() {
   if test $worktree_count -gt 1
   then
     echo "multiple worktree matches:"
-    echo $existing_worktree
+    echo "$existing_worktree"
     return 1
   fi
 
   echo "Deleting worktree $existing_worktree"
 
-  cd $existing_worktree
+  cd "$existing_worktree"
   if git_is_touched
   then
     echo "unsaved changes in worktree. aborting"
@@ -119,80 +125,82 @@ git_worktree_delete() {
 
   # switch to main worktree after delete
   git_worktree_open main
-  rm -rf $existing_worktree
+  rm -rf "$existing_worktree"
   git worktree prune
-  git branch -D $branch_name
+  git branch -D "$branch_name"
 }
 
 # Get the name of the branch of the worktree that matches search string
 git_worktree_find() {
-  local exact_result=$(git worktree list | grep "\\[$*\\]" | grep -o '^[^ ]\+')
-  local exact_count=$(echo $exact_result | wc -w)
+  local search="$1"
+  local escaped_search=$(printf '%s\n' "$search" | sed 's/[[\.*^$()+?{|]/\\&/g')
+  local exact_result=$(git worktree list | grep -E "\\[${escaped_search}\\]" | grep -oE '^[^ ]+')
+  local exact_count=$(echo "$exact_result" | wc -w)
   if test $exact_count -eq 1
   then
-    echo $exact_result
+    echo "$exact_result"
     return 0
   fi
-  git worktree list | grep "\\[.*$*.*\\]" | grep -o '^[^ ]\+'
+  git worktree list | grep -E "\\[.*${escaped_search}.*\\]" | grep -oE '^[^ ]+'
 }
 
 # Find or create a git worktree for branch
 git_worktree_open() {
-  local arg_count=$(echo $* | wc -w)
-
-  if test $arg_count -ne 1
+  if test $# -ne 1
   then
     echo "only one argument accepted by git_worktree_open"
     return 1
   fi
 
-  local existing_worktree=$(git_worktree_find $*)
-  local worktree_count=$(echo $existing_worktree | wc -w)
+  local existing_worktree=$(git_worktree_find "$1")
+  local worktree_count=$(echo "$existing_worktree" | wc -w)
 
   if test $worktree_count -eq 1
   then
-    cd $existing_worktree
+    cd "$existing_worktree"
     return 0
   fi
 
   if test $worktree_count -gt 1
   then
     echo "multiple worktree matches:"
-    echo $existing_worktree
+    echo "$existing_worktree"
     return 1
   fi
 
-  local existing_branch=$(git_branch_find_exact $* || git_branch_find $*)
-  local existing_local_branch=$(git_local_branch_find_exact $* || git_local_branch_find $*)
-  local branch_count=$(echo $existing_branch | wc -w)
-  local local_branch_count=$(echo $existing_local_branch | wc -w)
+  local existing_branch=$(git_branch_find_exact "$1" || git_branch_find "$1")
+  local existing_local_branch=$(git_local_branch_find_exact "$1" || git_local_branch_find "$1")
+  local branch_count=$(echo "$existing_branch" | wc -w)
+  local local_branch_count=$(echo "$existing_local_branch" | wc -w)
 
   if test $branch_count -gt 1
   then
     echo "multiple branch matches:"
-    echo $existing_branch
+    echo "$existing_branch"
     return 1
   fi
 
   if test $branch_count -eq 0
   then
-    local branch_name="$*"
+    local branch_name="$1"
     echo "creating branch and adding worktree for '$branch_name'"
   fi
 
   if test $branch_count -eq 1
   then
     local branch_name="$existing_branch"
+    # Strip any remote prefixes that might have slipped through
+    branch_name=$(echo "$branch_name" | sed 's|^remotes/origin/||' | sed 's|^remotes/||')
     echo "adding worktree for existing branch '$branch_name'"
   fi
 
-  local repo_basedir=$(git_repository_root | grep -o "^[^~]\+")
-  local embeddable_branch_name=$(echo $branch_name | sed 's/[^a-zA-Z0-9_]/-/g')
+  local repo_basedir=$(git_repository_root | grep -oE "^[^~]+")
+  local embeddable_branch_name=$(echo "$branch_name" | sed 's/[^a-zA-Z0-9_]/-/g')
   local worktree_dir="$repo_basedir~$embeddable_branch_name"
 
   if test $branch_count -eq 0
   then
-    git worktree add -b $branch_name $worktree_dir
+    git worktree add -b "$branch_name" "$worktree_dir"
   fi
 
   if test $branch_count -eq 1
@@ -200,17 +208,17 @@ git_worktree_open() {
     if test $local_branch_count -eq 0
     then
       local temp_branch=git_worktree_open.temp
-      git worktree add -b $temp_branch $worktree_dir
-      cd $worktree_dir
-      git checkout $branch_name
-      git branch -D $temp_branch
+      git worktree add -b "$temp_branch" "$worktree_dir"
+      cd "$worktree_dir"
+      git checkout "$branch_name"
+      git branch -D "$temp_branch"
       git worktree prune
     else
-      git worktree add $worktree_dir $branch_name
+      git worktree add "$worktree_dir" "$branch_name"
     fi
   fi
 
-  cd $worktree_dir
+  cd "$worktree_dir"
 }
 
 alias gb="git branch"
