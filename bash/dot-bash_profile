@@ -44,13 +44,16 @@ alias dk='du -k | f 2 1 | sort | f 2 1 | align | sed "s/\.\//  /"'
 # Reload ~./bash_profile
 alias reload="source ~/.bash_profile"
 
-# Load other bash profile files if present.
-if exists $HOME/.bash_profile_*
-then for f in $(ls $HOME/.bash_profile_* | sort); do source $f; 
-done
+# Load other bash profile files if present. (Use compgen so we don't run ls on
+# literal glob when no files match, which can break in non-interactive/Cursor.)
+if compgen -G "$HOME/.bash_profile_*" >/dev/null 2>&1; then
+  for f in $(compgen -G "$HOME/.bash_profile_*" | sort); do [[ -f "$f" ]] && source "$f"; done
 fi
 
-export PS1=$GREEN'$(hostname -s) '$CYAN'\w'$RED'$(git_branch_name 1>/dev/null && echo " ($(git_branch_name))")'$YELLOW'\$ '$NO_COLOR
+# Only set prompt for interactive shells (avoids issues when Cursor/IDE runs bash -c).
+if [[ $- == *i* ]]; then
+  export PS1=$GREEN'$(hostname -s) '$CYAN'\w'$RED'$(git_branch_name 1>/dev/null && echo " ($(git_branch_name))")'$YELLOW'\$ '$NO_COLOR
+fi
 
 
 [ -d "$HOME/.sc-tools" ] && source "$HOME/.sc-tools/dotfiles/env.bash" #sc-tools-setup

@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Load other bashrc files if present.
-if [[ -n `ls ~/.bashrc_* 2> /dev/null` ]]; then
-  for f in $(ls $HOME/.bashrc_* | sort); do source $f; done
+# Load other bashrc files if present. (Use compgen so we don't run ls on
+# literal glob when no files match, which can break in non-interactive/Cursor.)
+if compgen -G "$HOME/.bashrc_*" >/dev/null 2>&1; then
+  for f in $(compgen -G "$HOME/.bashrc_*" | sort); do [[ -f "$f" ]] && source "$f"; done
 fi
 
 # For now, I really don't want to try and think to hard about whether
