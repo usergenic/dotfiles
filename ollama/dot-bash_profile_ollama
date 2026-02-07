@@ -1,2 +1,4 @@
-alias ollama-cursor-tunnel="cloudflared tunnel --url http://localhost:11434 --http-host-header=localhost:11434"
-
+alias ollama-cursor-cloudflared="cloudflared tunnel --url http://localhost:11434 --http-host-header=localhost:11434"
+alias ollama-cursor-ngrok="ngrok http 7005"
+export OLLAMA_ORIGINS="*"
+export OLLAMA_CONTEXT_LENGTH=32764
