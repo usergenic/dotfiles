@@ -1,6 +1,5 @@
-[user]
-	name = Brendan Baldwin
-	email = brendan.baldwin@soundcloud.com
+[include]
+    path = ~/.gitconfig.local
 [push]
 	default = current
 [color]
