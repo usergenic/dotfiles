@@ -51,11 +51,11 @@ if compgen -G "$HOME/.bash_profile_*" >/dev/null 2>&1; then
 fi
 
 # Prompt colors (defined so PS1 works in Cursor/IDE; no-op if terminal doesn't support)
-NO_COLOR='\033[0m'
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-CYAN='\033[0;36m'
+NO_COLOR='\[\033[0m\]'
+RED='\[\033[0;31m\]'
+GREEN='\[\033[0;32m\]'
+YELLOW='\[\033[1;33m\]'
+CYAN='\[\033[0;36m\]'
 
 # Git branch name for prompt (no-op if not in a repo; avoids "command not found" in Cursor)
 git_branch_name() {
